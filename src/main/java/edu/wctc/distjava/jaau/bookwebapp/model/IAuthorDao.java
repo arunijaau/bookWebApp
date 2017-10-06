@@ -13,7 +13,8 @@ import java.util.List;
  * @author Aruni
  */
 public interface IAuthorDao {
-
-    List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException;
+    public abstract int removeAuthorById(Integer id) throws ClassNotFoundException, IllegalArgumentException, SQLException;
+    
+    public abstract List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException;
     
 }

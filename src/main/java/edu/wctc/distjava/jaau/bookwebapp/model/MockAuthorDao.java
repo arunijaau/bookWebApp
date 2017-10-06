@@ -57,4 +57,10 @@ public class MockAuthorDao implements IAuthorDao {
         }
     }  
     
+    public final int removeAuthorById(Integer id) throws ClassNotFoundException, IllegalArgumentException, SQLException{
+        
+        return 1;
+        
+    }
+    
 }

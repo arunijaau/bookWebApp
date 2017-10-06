@@ -22,6 +22,8 @@ public class AuthorDao implements IAuthorDao {
     private String userName;
     private String password;
     private DataAccess db;
+    private final String AUTHOR_TBL = "author";
+    private final String AUTHOR_PK = "author_id";
 
     public AuthorDao(String driverClass, String url, String userName, String password, DataAccess db) {
         
@@ -32,9 +34,31 @@ public class AuthorDao implements IAuthorDao {
         setDb(db);
     }
     
+//    public int addAuthor(Author author){
+//        
+//    }
+//    
+//    public int addAuthor(List<String> colName, List<Object> colValues){
+//        
+//    }
+    
+    public final int removeAuthorById(Integer id) throws ClassNotFoundException, IllegalArgumentException, SQLException{
+        if(id == null || id < 1 ){
+            throw new IllegalArgumentException("id must be a Integer greater than 0");
+            
+        }
+        db.openConnection(driverClass, url, userName, password);
+        
+        int recsDeleted = db.deleteRecordById(AUTHOR_TBL,AUTHOR_PK, id);
+        db.closeConnection();
+        
+        return recsDeleted;
+    }
     
     @Override
     public final List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException{
+        db.openConnection(driverClass, url, userName, password);
+        
         List<Author> list = new Vector<>();
         List<Map<String, Object>> rawData = db.getAllRecords("author", 0);
         Author author = null;
@@ -57,7 +81,8 @@ public class AuthorDao implements IAuthorDao {
                         
             list.add(author);
         }
-                
+        
+        db.closeConnection();
         return list;
     }
 
@@ -108,11 +133,10 @@ public class AuthorDao implements IAuthorDao {
                 "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
                 "root", "admin",
-                new MySqlDataAccess("com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book",
-                "root", "admin")
+                new MySqlDataAccess()
         );
         
+        int recsDeleted = dao.removeAuthorById(2);
         List<Author> list = dao.getListOfAuthors();
         
         for(Author a: list){

@@ -19,11 +19,22 @@ import java.util.List;
  */
 public class AuthorService {
     private IAuthorDao authorDao;
+    private final String AUTHOR_TBL = "author";
+    private final String AUTHOR_PK = "author_id";
     
     public AuthorService(IAuthorDao authorDao){
         setAuthorDao(authorDao);
     }
     
+    public final int removeAuthorById(String id) throws ClassNotFoundException, IllegalArgumentException, SQLException, NumberFormatException{
+        if(id == null){
+            throw new IllegalArgumentException("id must be an Integer greater than 0.");
+            
+        }
+        Integer value = Integer.parseInt(id);
+        return authorDao.removeAuthorById(value);
+        
+    }
     public List<Author> getAuthorList() 
             throws SQLException, ClassNotFoundException{
         return authorDao.getListOfAuthors();
@@ -44,12 +55,12 @@ public class AuthorService {
                 "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
                 "root", "admin",
-                new MySqlDataAccess("com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book",
-                "root", "admin")
+                new MySqlDataAccess()
         );
         
         AuthorService authorService = new AuthorService(dao);
+        
+        int recsDeleted = authorService.removeAuthorById("2");
         
         List<Author> list = authorService.getAuthorList();
         

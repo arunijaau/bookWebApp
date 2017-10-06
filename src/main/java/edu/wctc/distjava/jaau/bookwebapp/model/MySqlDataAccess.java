@@ -7,43 +7,35 @@ package edu.wctc.distjava.jaau.bookwebapp.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.Vector;
 
 /**
  *
  * @author Aruni
  */
-public class MySqlDataAccess implements DataAccess{
+public class MySqlDataAccess implements DataAccess {
 
     private final int ALL_RECORDS = 0;
+    private final boolean DEBUG = true;
 
     private Connection conn;
     private Statement stmt;
+    private PreparedStatement pstmt;
     private ResultSet rs;
-    private String driverClass;
-    private String url;
-    private String userName;
-    private String password;
-
-    public MySqlDataAccess(String driverClass,
-            String url, String userName, String password) {
-
-        // if(driverClass == null || )
-        setDriverClass(driverClass);
-        setUrl(url);
-        setUserName(userName);
-        setPassword(password);
-
-    }
-
-    public void openConnection() throws ClassNotFoundException, SQLException {
+    
+    public void openConnection(String driverClass,
+            String url, String userName, String password) 
+            throws ClassNotFoundException, SQLException {
 
         Class.forName(driverClass);
         conn = DriverManager.getConnection(url, userName, password);
@@ -75,7 +67,7 @@ public class MySqlDataAccess implements DataAccess{
             sql = "select * from " + tableName;
         }
 
-        openConnection();
+        
         stmt = conn.createStatement();
         rs = stmt.executeQuery(sql);
 
@@ -91,62 +83,82 @@ public class MySqlDataAccess implements DataAccess{
             rawData.add(record);
         }
 
-        closeConnection();
-
+        
         return rawData;
 
     }
     
-    
-   
-    
-
-    public String getDriverClass() {
-        return driverClass;
+    public int createRecord(String tableName, List<String> colNames, 
+            List<Object> colValues) throws SQLException{
+        
+        String sql = "INSERT INTO " + tableName + " ";
+        StringJoiner sj = new StringJoiner(", ","(",")");
+        for (String col: colNames){
+            sj.add(col);
+        }
+        
+             
+        sql += sj.toString(); 
+        sql += " VALUES ";
+        
+        sj = new StringJoiner(", ","(",")");
+        for(Object value : colValues){
+            sj.add("?");
+        }
+        sql += sj.toString();
+        if(DEBUG) System.out.println(sql);   
+        pstmt = conn.prepareStatement(sql);
+        
+        for(int i = 1; i <= colValues.size(); i++){
+            pstmt.setObject(i,colValues.get(i-1));         
+        }
+        
+        return pstmt.executeUpdate();
     }
 
-    public void setDriverClass(String driverClass) {
-        this.driverClass = driverClass;
-    }
+    public int deleteRecordById(String tableName, String pkColName, Object pkValue) 
+            throws ClassNotFoundException, SQLException {
 
-    public String getUrl() {
-        return url;
-    }
+        String sql = "DELETE FROM " + tableName + " WHERE " + pkColName + " = ?";
+        
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setObject(1,pkValue);
+        return pstmt.executeUpdate();
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        DataAccess db = new MySqlDataAccess(
-                "com.mysql.jdbc.Driver",
+        DataAccess db = new MySqlDataAccess();
+        
+        db.openConnection("com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
-                "root", "admin"
-        );
-
-        List<Map<String, Object>> list = db.getAllRecords("author", 0);
-
-        for (Map<String, Object> rec : list) {
-            System.out.println(rec);
-
-        }
+                "root", "admin");
+        
+        
+        int recsAdded = db.createRecord("author", 
+                Arrays.asList("author_name", "date_added"), 
+                Arrays.asList("Bob Jones","2010-02-11"));
+                
+        
+         db.closeConnection();
+         
+         System.out.println("Recs created : " + recsAdded);
+//        db.openConnection("com.mysql.jdbc.Driver",
+//                "jdbc:mysql://localhost:3306/book",
+//                "root", "admin");
+//        
+//        int recsDeleted = db.deleteRecordById("author", "author_id", new Integer(1));
+//        System.out.println("No. of Recs Deleted : " + recsDeleted);
+//        
+//        List<Map<String, Object>> list = db.getAllRecords("author", 0);
+//
+//        for (Map<String, Object> rec : list) {
+//            System.out.println(rec);
+//
+//        }
+//        
+//        db.closeConnection();
 
     }
 
