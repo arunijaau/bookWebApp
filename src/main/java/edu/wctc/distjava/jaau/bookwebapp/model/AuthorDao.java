@@ -44,7 +44,7 @@ public class AuthorDao implements IAuthorDao {
     
     public final int removeAuthorById(Integer id) throws ClassNotFoundException, IllegalArgumentException, SQLException{
         if(id == null || id < 1 ){
-            throw new IllegalArgumentException("id must be a Integer greater than 0");
+            throw new IllegalArgumentException("id must be an Integer greater than 0");
             
         }
         db.openConnection(driverClass, url, userName, password);
@@ -57,6 +57,7 @@ public class AuthorDao implements IAuthorDao {
     
     @Override
     public final List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException{
+        
         db.openConnection(driverClass, url, userName, password);
         
         List<Author> list = new Vector<>();
@@ -129,7 +130,7 @@ public class AuthorDao implements IAuthorDao {
     }
     
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        AuthorDao dao = new AuthorDao(
+        IAuthorDao dao = new AuthorDao(
                 "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
                 "root", "admin",

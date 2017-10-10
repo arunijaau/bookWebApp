@@ -18,7 +18,7 @@ public interface DataAccess {
     public abstract int createRecord(String tableName, List<String> colNames, 
             List<Object> colValues) throws SQLException;
     
-    void closeConnection() throws SQLException;
+    public abstract void closeConnection() throws SQLException;
 
     /**
      * Returns records from a table. Requires and open connection.
@@ -28,7 +28,7 @@ public interface DataAccess {
      * @return
      * @throws SQLException
      */
-    List<Map<String, Object>> getAllRecords(String tableName, int maxRecords) throws SQLException, ClassNotFoundException;
+    public abstract List<Map<String, Object>> getAllRecords(String tableName, int maxRecords) throws SQLException, ClassNotFoundException;
 
     public abstract int deleteRecordById(String tableName, String pkColName, Object pkValue) 
             throws ClassNotFoundException, SQLException;

@@ -96,7 +96,6 @@ public class MySqlDataAccess implements DataAccess {
         for (String col: colNames){
             sj.add(col);
         }
-        
              
         sql += sj.toString(); 
         sql += " VALUES ";
@@ -139,7 +138,6 @@ public class MySqlDataAccess implements DataAccess {
         int recsAdded = db.createRecord("author", 
                 Arrays.asList("author_name", "date_added"), 
                 Arrays.asList("Bob Jones","2010-02-11"));
-                
         
          db.closeConnection();
          
