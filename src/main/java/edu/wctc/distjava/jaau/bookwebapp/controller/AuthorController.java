@@ -26,13 +26,19 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Aruni
  */
-
-
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
 
     public static final String ACTION = "action";
     public static final String LIST_ACTION = "list";
+    public static final String DELETE_ACTION = "remove";
+    public static final String ID = "id";
+    public static final String EDIT_ACTION = "edit";
+    public static final String ADD_ACTION = "add";
+    public static final String LIST_PAGE = "/authorList.jsp";
+    public static final String ADDEDIT_PAGE = "/addEditAuthor.jsp";
+    public static final String GET_METHOD = "get";
+    public static final String POST_METHOD = "post";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,14 +49,15 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response, String method)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String destination = "/authorList.jsp"; //default
+        String destination = LIST_PAGE; //default
 
         try {
             String action = request.getParameter(ACTION);
+
             IAuthorDao dao = new AuthorDao(
                     "com.mysql.jdbc.Driver",
                     "jdbc:mysql://localhost:3306/book",
@@ -62,13 +69,41 @@ public class AuthorController extends HttpServlet {
 
             List<Author> authorList = null;
 
-            if (action.equalsIgnoreCase(LIST_ACTION)) {
+            if (action.equalsIgnoreCase(DELETE_ACTION)) {
+                String authorId = request.getParameter(ID);
+                authorService.removeAuthorById(authorId);
+            } else if (action.equalsIgnoreCase(EDIT_ACTION)) {
+                String authorId = request.getParameter(ID);
+                Author author = authorService.findAuthor(authorId);
+
+                if (method == GET_METHOD) {
+                    request.setAttribute("author", author);
+                    destination = ADDEDIT_PAGE;
+                } else {
+                    String name = request.getParameter("name");
+                    String dateAdded = request.getParameter("dateAdded");
+                    author.setAuthorName(name);
+                    //author.setDateAdded(dateAdded);
+                    authorService.updateAuthor(author);
+                    destination = LIST_PAGE;
+                }
+
+            } else if (action.equalsIgnoreCase(ADD_ACTION)) {
+                if (method == GET_METHOD) {
+                    destination = ADDEDIT_PAGE;
+                } else {
+                    destination = LIST_PAGE;
+                }
+                String name = request.getParameter("name");
+                String dateAdded = request.getParameter("dateAdded");
+            }
+            if (destination == LIST_PAGE) {
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
             }
 
         } catch (Exception e) {
-            destination = "/authorList.jsp";
+            destination = LIST_PAGE;
             request.setAttribute("errMessage", e.getMessage());
         }
 
@@ -88,7 +123,7 @@ public class AuthorController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        processRequest(request, response, GET_METHOD);
     }
 
     /**
@@ -102,7 +137,7 @@ public class AuthorController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        processRequest(request, response, POST_METHOD);
     }
 
     /**

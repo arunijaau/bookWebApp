@@ -26,7 +26,32 @@ public class AuthorService {
         setAuthorDao(authorDao);
     }
     
-    public final int removeAuthorById(String id) throws ClassNotFoundException, IllegalArgumentException, SQLException, NumberFormatException{
+    
+    
+    public final int addAuthor(List<String> colNames, List<Object> colValues ) throws ClassNotFoundException, SQLException{
+        return authorDao.addAuthor(colNames,colValues);
+    }
+    
+    public final int updateAuthor(Author author)  throws 
+            ClassNotFoundException, SQLException{
+        List<String> colNames = new ArrayList<>();
+        colNames.add("author_name");
+        colNames.add("date_added");
+        
+        List<Object> colValues = new ArrayList<>();
+        colValues.add(author.getAuthorName());
+        colValues.add(author.getDateAdded());
+        
+        return updateAuthor(colNames, colValues,author.getAuthorId().toString());
+    }
+    
+    public final int updateAuthor(List<String> colNames, List<Object> colValues, String pkValue) throws 
+            ClassNotFoundException, SQLException{
+        return authorDao.updateAuthor(colNames, colValues, pkValue);
+    }
+    
+    public final int removeAuthorById(String id) throws ClassNotFoundException, IllegalArgumentException, 
+            SQLException, NumberFormatException{
         if(id == null){
             throw new IllegalArgumentException("id must be an Integer greater than 0.");
             
@@ -35,11 +60,17 @@ public class AuthorService {
         return authorDao.removeAuthorById(value);
         
     }
+    
+    public Author findAuthor(String pkValue) throws ClassNotFoundException, SQLException{
+        if(pkValue == null || pkValue.isEmpty()){
+            throw new IllegalArgumentException("Column value must be an provided.");
+        }
+        return authorDao.getAuthorById(pkValue);
+    }
+            
     public List<Author> getAuthorList() 
             throws SQLException, ClassNotFoundException{
-        return authorDao.getListOfAuthors();
-        
-        
+        return authorDao.getListOfAuthors();        
     }
 
     public IAuthorDao getAuthorDao() {

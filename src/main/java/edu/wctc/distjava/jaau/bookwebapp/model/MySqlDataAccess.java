@@ -32,9 +32,9 @@ public class MySqlDataAccess implements DataAccess {
     private Statement stmt;
     private PreparedStatement pstmt;
     private ResultSet rs;
-    
+
     public void openConnection(String driverClass,
-            String url, String userName, String password) 
+            String url, String userName, String password)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(driverClass);
@@ -55,6 +55,30 @@ public class MySqlDataAccess implements DataAccess {
      * @return
      * @throws SQLException
      */
+    public Map<String, Object> findRecordById(String tableName, String colName, String colValue) throws SQLException {
+        
+       
+        String sql = "SELECT * FROM " + tableName + " WHERE " + colName + " = ?";
+        
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setObject(1, colValue);
+        rs = pstmt.executeQuery(sql);
+
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int colCount = rsmd.getColumnCount();
+        Map<String, Object> record = null;               
+        
+        while (rs.next()) {
+            record = new LinkedHashMap<>();
+            for (int colNum = 1; colNum <= colCount; colNum++) {
+                record.put(rsmd.getColumnName(colNum), rs.getObject(colNum));
+            }
+            
+        }
+
+        return record;
+    }
+
     public List<Map<String, Object>> getAllRecords(String tableName, int maxRecords)
             throws SQLException, ClassNotFoundException {
 
@@ -67,7 +91,6 @@ public class MySqlDataAccess implements DataAccess {
             sql = "select * from " + tableName;
         }
 
-        
         stmt = conn.createStatement();
         rs = stmt.executeQuery(sql);
 
@@ -83,45 +106,69 @@ public class MySqlDataAccess implements DataAccess {
             rawData.add(record);
         }
 
-        
         return rawData;
 
     }
-    
-    public int createRecord(String tableName, List<String> colNames, 
-            List<Object> colValues) throws SQLException{
-        
-        String sql = "INSERT INTO " + tableName + " ";
-        StringJoiner sj = new StringJoiner(", ","(",")");
-        for (String col: colNames){
+
+    public int updateRecord(String tableName, List<String> colNames,
+            List<Object> colValues, String pkColName, String pkValue) throws SQLException {
+        String sql = "UPDATE " + tableName + " SET ";
+
+        StringJoiner sj = new StringJoiner(" = ?,", "", " = ?");
+        for (String col : colNames) {
             sj.add(col);
         }
-             
-        sql += sj.toString(); 
-        sql += " VALUES ";
-        
-        sj = new StringJoiner(", ","(",")");
-        for(Object value : colValues){
-            sj.add("?");
-        }
         sql += sj.toString();
-        if(DEBUG) System.out.println(sql);   
-        pstmt = conn.prepareStatement(sql);
-        
-        for(int i = 1; i <= colValues.size(); i++){
-            pstmt.setObject(i,colValues.get(i-1));         
+        sql += " WHERE " + pkColName + " = ?";
+
+        if (DEBUG) {
+            System.out.println(sql);
         }
-        
+        pstmt = conn.prepareStatement(sql);
+
+        for (int i = 1; i <= colValues.size(); i++) {
+            pstmt.setObject(i, colValues.get(i - 1));
+        }
+        pstmt.setObject(colValues.size() + 1, pkValue);
         return pstmt.executeUpdate();
     }
 
-    public int deleteRecordById(String tableName, String pkColName, Object pkValue) 
+    public int createRecord(String tableName, List<String> colNames,
+            List<Object> colValues) throws SQLException {
+
+        String sql = "INSERT INTO " + tableName + " ";
+        StringJoiner sj = new StringJoiner(", ", "(", ")");
+        for (String col : colNames) {
+            sj.add(col);
+        }
+
+        sql += sj.toString();
+        sql += " VALUES ";
+
+        sj = new StringJoiner(", ", "(", ")");
+        for (Object value : colValues) {
+            sj.add("?");
+        }
+        sql += sj.toString();
+        if (DEBUG) {
+            System.out.println(sql);
+        }
+        pstmt = conn.prepareStatement(sql);
+
+        for (int i = 1; i <= colValues.size(); i++) {
+            pstmt.setObject(i, colValues.get(i - 1));
+        }
+
+        return pstmt.executeUpdate();
+    }
+
+    public int deleteRecordById(String tableName, String pkColName, Object pkValue)
             throws ClassNotFoundException, SQLException {
 
         String sql = "DELETE FROM " + tableName + " WHERE " + pkColName + " = ?";
-        
+
         pstmt = conn.prepareStatement(sql);
-        pstmt.setObject(1,pkValue);
+        pstmt.setObject(1, pkValue);
         return pstmt.executeUpdate();
 
     }
@@ -129,19 +176,23 @@ public class MySqlDataAccess implements DataAccess {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         DataAccess db = new MySqlDataAccess();
-        
+
         db.openConnection("com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
                 "root", "admin");
-        
-        
-        int recsAdded = db.createRecord("author", 
-                Arrays.asList("author_name", "date_added"), 
-                Arrays.asList("Bob Jones","2010-02-11"));
-        
-         db.closeConnection();
-         
-         System.out.println("Recs created : " + recsAdded);
+
+//        int recsAdded = db.createRecord("author",
+//                Arrays.asList("author_name", "date_added"),
+//                Arrays.asList("Bob Jones", "2010-02-11"));
+
+        int recsUpdated = db.updateRecord("author",
+                Arrays.asList("author_name", "date_added"),
+                Arrays.asList("Connie Jacobs", "2017-10-12"), "author_id", "6");
+
+        db.closeConnection();
+
+//        System.out.println("Recs created : " + recsAdded);
+//        System.out.println("Recs updated : " + recsUpdated);
 //        db.openConnection("com.mysql.jdbc.Driver",
 //                "jdbc:mysql://localhost:3306/book",
 //                "root", "admin");

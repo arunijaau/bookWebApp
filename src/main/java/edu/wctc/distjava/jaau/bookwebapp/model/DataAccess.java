@@ -15,6 +15,11 @@ import java.util.Map;
  */
 public interface DataAccess {
 
+    public Map<String, Object> findRecordById(String tableName, String colName, String colValue) throws SQLException;
+    
+    public abstract int updateRecord(String tableName, List<String> colNames, 
+            List<Object> colValues, String pkColName, String pkValue) throws SQLException;
+    
     public abstract int createRecord(String tableName, List<String> colNames, 
             List<Object> colValues) throws SQLException;
     

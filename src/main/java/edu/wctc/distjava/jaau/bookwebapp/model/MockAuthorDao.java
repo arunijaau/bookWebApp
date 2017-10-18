@@ -30,8 +30,7 @@ public class MockAuthorDao implements IAuthorDao {
         List<Author> list = Arrays.asList(
                 new Author(1,"John Doe", new Date()),
                 new Author(2,"Bob Smith", new Date())
-        );
-                            
+        );                     
         return list;
     }
 
@@ -39,16 +38,7 @@ public class MockAuthorDao implements IAuthorDao {
     
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         IAuthorDao dao = new MockAuthorDao();
-        
-//        IAuthorDao dao = new AuthorDao(
-//                "com.mysql.jdbc.Driver",
-//                "jdbc:mysql://localhost:3306/book",
-//                "root", "admin",
-//                new MySqlDataAccess("com.mysql.jdbc.Driver",
-//                "jdbc:mysql://localhost:3306/book",
-//                "root", "admin")
-//        );
-
+       
         List<Author> list = dao.getListOfAuthors();
         
         for(Author a: list){
@@ -61,6 +51,21 @@ public class MockAuthorDao implements IAuthorDao {
         
         return 1;
         
+    }
+
+    @Override
+    public int addAuthor(List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException, IllegalArgumentException {
+        return 1;
+    }
+
+    @Override
+    public int updateAuthor(List<String> colNames, List<Object> colValues, String pkValue) throws ClassNotFoundException, SQLException {
+        return 1;
+    }
+
+    @Override
+    public Author getAuthorById(String colValue) throws ClassNotFoundException, SQLException, IllegalArgumentException {
+        return null;
     }
     
 }
