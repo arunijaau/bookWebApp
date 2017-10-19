@@ -19,7 +19,7 @@ public interface IAuthorDao {
     public abstract int addAuthor(List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException, 
             IllegalArgumentException;
     
-    public abstract int updateAuthor(List<String> colNames, List<Object> colValues, String pkValue) throws ClassNotFoundException, SQLException;
+    public abstract int updateAuthor(List<String> colNames, List<Object> colValues, Object pkValue) throws ClassNotFoundException, SQLException;
     
     public abstract int removeAuthorById(Integer id) throws ClassNotFoundException, IllegalArgumentException, SQLException;
     

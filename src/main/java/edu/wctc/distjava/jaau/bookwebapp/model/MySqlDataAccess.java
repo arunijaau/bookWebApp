@@ -55,14 +55,14 @@ public class MySqlDataAccess implements DataAccess {
      * @return
      * @throws SQLException
      */
-    public Map<String, Object> findRecordById(String tableName, String colName, String colValue) throws SQLException {
+    public Map<String, Object> findRecordById(String tableName, String colName, Object colValue) throws SQLException {
         
        
         String sql = "SELECT * FROM " + tableName + " WHERE " + colName + " = ?";
-        
-        pstmt = conn.prepareStatement(sql);
+        System.out.println(sql);
+        pstmt = conn.prepareStatement(sql);        
         pstmt.setObject(1, colValue);
-        rs = pstmt.executeQuery(sql);
+        rs = pstmt.executeQuery();
 
         ResultSetMetaData rsmd = rs.getMetaData();
         int colCount = rsmd.getColumnCount();
@@ -111,7 +111,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public int updateRecord(String tableName, List<String> colNames,
-            List<Object> colValues, String pkColName, String pkValue) throws SQLException {
+            List<Object> colValues, String pkColName, Object pkValue) throws SQLException {
         String sql = "UPDATE " + tableName + " SET ";
 
         StringJoiner sj = new StringJoiner(" = ?,", "", " = ?");
@@ -187,8 +187,10 @@ public class MySqlDataAccess implements DataAccess {
 
         int recsUpdated = db.updateRecord("author",
                 Arrays.asList("author_name", "date_added"),
-                Arrays.asList("Connie Jacobs", "2017-10-12"), "author_id", "6");
+                Arrays.asList("Connie Jac", "2017-10-12"), "author_id", 6);
 
+//        Map<String, Object> record = db.findRecordById("author", "author_id", 7);
+        
         db.closeConnection();
 
 //        System.out.println("Recs created : " + recsAdded);

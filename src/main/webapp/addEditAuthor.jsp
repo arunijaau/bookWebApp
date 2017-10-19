@@ -5,6 +5,7 @@
 --%>
 
 
+<%@page import="edu.wctc.distjava.jaau.bookwebapp.controller.AuthorController"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -19,7 +20,8 @@
     <body>
         <h1>Add/Edit Author</h1>
         
-        <form name="addEditAuthorForm" id="addEditAuthorForm" method="POST" action="authorController?action=addEdit">
+        <form name="addEditAuthorForm" id="addEditAuthorForm" method="POST" action="authorController?action=${action}">
+            <input type="hidden" value="${author.authorId}" name="id">
             Author Name: <input type="text" value="${author.authorName}" name="name">
             <br>
             Date Added: <input type="text" value="${author.dateAdded}" name="dateAdded">

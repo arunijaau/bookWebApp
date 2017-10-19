@@ -59,7 +59,7 @@ public class MockAuthorDao implements IAuthorDao {
     }
 
     @Override
-    public int updateAuthor(List<String> colNames, List<Object> colValues, String pkValue) throws ClassNotFoundException, SQLException {
+    public int updateAuthor(List<String> colNames, List<Object> colValues, Object pkValue) throws ClassNotFoundException, SQLException {
         return 1;
     }
 

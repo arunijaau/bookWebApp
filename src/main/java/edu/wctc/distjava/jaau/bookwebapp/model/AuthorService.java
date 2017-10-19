@@ -26,14 +26,25 @@ public class AuthorService {
         setAuthorDao(authorDao);
     }
     
-    
-    
     public final int addAuthor(List<String> colNames, List<Object> colValues ) throws ClassNotFoundException, SQLException{
         return authorDao.addAuthor(colNames,colValues);
     }
     
+    public final int addAuthor(Author author) throws ClassNotFoundException, SQLException{
+        List<String> colNames = new ArrayList<>();        
+        colNames.add("author_name");
+        colNames.add("date_added");
+        
+        List<Object> colValues = new ArrayList<>();        
+        colValues.add(author.getAuthorName());
+        colValues.add(author.getDateAdded());
+        
+        return addAuthor(colNames, colValues);
+    }
+    
     public final int updateAuthor(Author author)  throws 
             ClassNotFoundException, SQLException{
+        
         List<String> colNames = new ArrayList<>();
         colNames.add("author_name");
         colNames.add("date_added");
@@ -42,10 +53,10 @@ public class AuthorService {
         colValues.add(author.getAuthorName());
         colValues.add(author.getDateAdded());
         
-        return updateAuthor(colNames, colValues,author.getAuthorId().toString());
+        return updateAuthor(colNames, colValues, author.getAuthorId().toString());
     }
     
-    public final int updateAuthor(List<String> colNames, List<Object> colValues, String pkValue) throws 
+    public final int updateAuthor(List<String> colNames, List<Object> colValues, Object pkValue) throws 
             ClassNotFoundException, SQLException{
         return authorDao.updateAuthor(colNames, colValues, pkValue);
     }

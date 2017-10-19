@@ -14,7 +14,13 @@ import edu.wctc.distjava.jaau.bookwebapp.model.MySqlDataAccess;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -72,32 +78,43 @@ public class AuthorController extends HttpServlet {
             if (action.equalsIgnoreCase(DELETE_ACTION)) {
                 String authorId = request.getParameter(ID);
                 authorService.removeAuthorById(authorId);
+
             } else if (action.equalsIgnoreCase(EDIT_ACTION)) {
                 String authorId = request.getParameter(ID);
                 Author author = authorService.findAuthor(authorId);
-
-                if (method == GET_METHOD) {
+                if (method.equals(GET_METHOD)) {
                     request.setAttribute("author", author);
+                    request.setAttribute("action", EDIT_ACTION);
                     destination = ADDEDIT_PAGE;
                 } else {
                     String name = request.getParameter("name");
                     String dateAdded = request.getParameter("dateAdded");
                     author.setAuthorName(name);
-                    //author.setDateAdded(dateAdded);
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                    Date date = format.parse(dateAdded);
+                    author.setDateAdded(date);
                     authorService.updateAuthor(author);
                     destination = LIST_PAGE;
                 }
 
             } else if (action.equalsIgnoreCase(ADD_ACTION)) {
-                if (method == GET_METHOD) {
+                if (method.equals(GET_METHOD)) {
                     destination = ADDEDIT_PAGE;
+                    request.setAttribute("action", ADD_ACTION);
                 } else {
                     destination = LIST_PAGE;
+                    String name = request.getParameter("name");
+                    String dateAdded = request.getParameter("dateAdded");
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                    Date date = format.parse(dateAdded);
+                    Author author = new Author();
+                    author.setAuthorName(name);
+                    author.setDateAdded(date);
+                    authorService.addAuthor(author);
                 }
-                String name = request.getParameter("name");
-                String dateAdded = request.getParameter("dateAdded");
+
             }
-            if (destination == LIST_PAGE) {
+            if (destination.equals(LIST_PAGE)) {
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
             }

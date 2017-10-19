@@ -49,7 +49,7 @@ public class AuthorDao implements IAuthorDao {
         return recsAdded;
     }
 
-    public int updateAuthor(List<String> colNames, List<Object> colValues, String pkValue) throws ClassNotFoundException, SQLException {
+    public int updateAuthor(List<String> colNames, List<Object> colValues, Object pkValue) throws ClassNotFoundException, SQLException {
         db.openConnection(driverClass, url, userName, password);
 
         int recsUpdated = db.updateRecord(AUTHOR_TBL, colNames, colValues, AUTHOR_PK, pkValue);
@@ -79,7 +79,7 @@ public class AuthorDao implements IAuthorDao {
         db.openConnection(driverClass, url, userName, password);
 
         Author author = new Author();
-        Map<String, Object> record = db.findRecordById(AUTHOR_TBL, AUTHOR_PK, colValue);
+        Map<String, Object> record = db.findRecordById(AUTHOR_TBL, AUTHOR_PK, Integer.parseInt(colValue));
 
         Object objRecId = record.get("author_id");
         Integer recId = objRecId == null
