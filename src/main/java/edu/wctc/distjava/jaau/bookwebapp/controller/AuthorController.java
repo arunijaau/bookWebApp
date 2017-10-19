@@ -46,6 +46,11 @@ public class AuthorController extends HttpServlet {
     public static final String GET_METHOD = "get";
     public static final String POST_METHOD = "post";
 
+    private String driverClass;
+    private String url;
+    private String username;
+    private String password;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -65,9 +70,9 @@ public class AuthorController extends HttpServlet {
             String action = request.getParameter(ACTION);
 
             IAuthorDao dao = new AuthorDao(
-                    "com.mysql.jdbc.Driver",
-                    "jdbc:mysql://localhost:3306/book",
-                    "root", "admin",
+                    driverClass,
+                    url,
+                    username, password,
                     new MySqlDataAccess()
             );
 
@@ -126,6 +131,18 @@ public class AuthorController extends HttpServlet {
 
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
+    }
+
+    @Override
+    public void init() throws ServletException {
+        driverClass = getServletContext()
+                .getInitParameter("db.driver.class");
+        url = getServletContext()
+                .getInitParameter("db.url");
+        username = getServletContext()
+                .getInitParameter("db.username");
+        password = getServletContext()
+                .getInitParameter("db.password");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

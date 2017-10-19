@@ -18,6 +18,7 @@
         <title>Add or Edit Author</title>
     </head>
     <body>
+        <jsp:include page="header.jsp"/>
         <h1>Add/Edit Author</h1>
         
         <form name="addEditAuthorForm" id="addEditAuthorForm" method="POST" action="authorController?action=${action}">

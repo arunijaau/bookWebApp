@@ -20,7 +20,7 @@
         <title>Author List</title>
     </head>
     <body>
-        
+        <jsp:include page="header.jsp"/>
         <p style="color: red;">${errMessage}</p>
 
         <h1>Author List</h1>
