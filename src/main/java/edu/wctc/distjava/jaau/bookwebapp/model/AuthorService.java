@@ -74,7 +74,7 @@ public class AuthorService {
     
     public Author findAuthor(String pkValue) throws ClassNotFoundException, SQLException{
         if(pkValue == null || pkValue.isEmpty()){
-            throw new IllegalArgumentException("Column value must be an provided.");
+            throw new IllegalArgumentException("Column value must be provided.");
         }
         return authorDao.getAuthorById(pkValue);
     }

@@ -30,7 +30,7 @@
             <c:forEach var="a" items="${authorList}">
                 <tr>
                     <td>${a.authorId}</td>
-                    <td><a href="authorController?action=edit&id=${a.authorId}">${a.authorName}</td>
+                    <td><a href="authorController?action=edit&id=${a.authorId}">${a.authorName}</a></td>
                     <td><fmt:formatDate pattern = "yyyy-MM-dd" value="${a.dateAdded}"/></td>
                     <td><input type='button' value='Remove' onclick="location.href = 'authorController?action=<%=AuthorController.DELETE_ACTION%>&id=${a.authorId}'"/></td>                    
                 </tr>                
