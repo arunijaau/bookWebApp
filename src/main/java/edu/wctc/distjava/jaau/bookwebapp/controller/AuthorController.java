@@ -6,11 +6,11 @@
 package edu.wctc.distjava.jaau.bookwebapp.controller;
 
 import edu.wctc.distjava.jaau.bookwebapp.model.Author;
-import edu.wctc.distjava.jaau.bookwebapp.model.AuthorDao;
-import edu.wctc.distjava.jaau.bookwebapp.model.AuthorService;
-import edu.wctc.distjava.jaau.bookwebapp.model.IAuthorDao;
 
-import edu.wctc.distjava.jaau.bookwebapp.model.MySqlDataAccess;
+import edu.wctc.distjava.jaau.bookwebapp.model.AuthorService;
+
+
+
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,6 +21,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
 
+    
+    
     public static final String ACTION = "action";
     public static final String LIST_ACTION = "list";
     public static final String DELETE_ACTION = "remove";
@@ -46,10 +49,9 @@ public class AuthorController extends HttpServlet {
     public static final String GET_METHOD = "get";
     public static final String POST_METHOD = "post";
 
-    private String driverClass;
-    private String url;
-    private String username;
-    private String password;
+    @EJB
+    private AuthorService authorService;
+
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -68,15 +70,6 @@ public class AuthorController extends HttpServlet {
 
         try {
             String action = request.getParameter(ACTION);
-
-            IAuthorDao dao = new AuthorDao(
-                    driverClass,
-                    url,
-                    username, password,
-                    new MySqlDataAccess()
-            );
-
-            AuthorService authorService = new AuthorService(dao);
 
             List<Author> authorList = null;
 
@@ -135,14 +128,7 @@ public class AuthorController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        driverClass = getServletContext()
-                .getInitParameter("db.driver.class");
-        url = getServletContext()
-                .getInitParameter("db.url");
-        username = getServletContext()
-                .getInitParameter("db.username");
-        password = getServletContext()
-                .getInitParameter("db.password");
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
