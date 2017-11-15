@@ -14,6 +14,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 @Stateless
@@ -37,68 +38,80 @@ public class AuthorService implements Serializable{
     }
 
     
+//    public int addAuthor(List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException {
+////        return authorDao.addAuthor(colNames,colValues);
+//        return 0;
+//    }
+
+    public void addAuthor(Author author) throws ClassNotFoundException, SQLException {
+        getEm().persist(author);
+        
+    }
+
+    public void updateAuthor(Author author) throws
+            ClassNotFoundException, SQLException {
+        getEm().merge(author);
+        
+    }
+
+//    public void updateAuthor(String name,Date dateAdded, Object pkValue) throws
+//            ClassNotFoundException, SQLException {
+////        
+//        Integer value = (Integer)pkValue;
+//        String jpql = "update Author a set a.authorName = :name "
+//                + "and a.dateAdded = :date where a.authorId = :id";
+//        Query q = getEm().createQuery(jpql);
+//        q.setParameter("id",value);
+//        q.setParameter("name", name);
+//        q.setParameter("date", dateAdded);
+//        q.executeUpdate();
     
-    public final int addAuthor(List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException {
-//        return authorDao.addAuthor(colNames,colValues);
-        return 0;
-    }
+    //Instructor solution
+//    Author author = getEm().find(Author.class,new Integer(id))
+//    author.setAuthorName(name);
+//    getEm().merge(author);
+    
+//    }
 
-    public final int addAuthor(Author author) throws ClassNotFoundException, SQLException {
-        List<String> colNames = new ArrayList<>();
-        colNames.add("author_name");
-        colNames.add("date_added");
-
-        List<Object> colValues = new ArrayList<>();
-        colValues.add(author.getAuthorName());
-        colValues.add(author.getDateAdded());
-
-        return addAuthor(colNames, colValues);
-    }
-
-    public final int updateAuthor(Author author) throws
-            ClassNotFoundException, SQLException {
-
-        List<String> colNames = new ArrayList<>();
-        colNames.add("author_name");
-        colNames.add("date_added");
-
-        List<Object> colValues = new ArrayList<>();
-        colValues.add(author.getAuthorName());
-        colValues.add(author.getDateAdded());
-
-        return updateAuthor(colNames, colValues, author.getAuthorId().toString());
-    }
-
-    public final int updateAuthor(List<String> colNames, List<Object> colValues, Object pkValue) throws
-            ClassNotFoundException, SQLException {
-//        return authorDao.updateAuthor(colNames, colValues, pkValue);
-        return 0;
-    }
-
-    public final int removeAuthorById(String id) throws ClassNotFoundException, IllegalArgumentException,
+    //It is optional to return an int value only if you want.
+    public void removeAuthorById(String id) throws ClassNotFoundException, IllegalArgumentException,
             SQLException, NumberFormatException {
+        //No need to check for null because when we parse to an Integer it will be checked.
         if (id == null) {
             throw new IllegalArgumentException("id must be an Integer greater than 0.");
-
-        }
+        }        
+        
         Integer value = Integer.parseInt(id);
-//        return authorDao.removeAuthorById(value);
-        return 0;
-
-    }
+        String jpql = "delete from Author a where a.authorId = :id";
+        Query q = getEm().createQuery(jpql);
+        q.setParameter("id", value);
+        q.executeUpdate();  
+        
+        //Here author is retrieved from cache. Therefore no need to merge first. Less efficient.
+//        Author author = getEm().find(Author.class,id);
+//        getEm().remove(author);
+        }
+    
+//    public void removeAuthor(Author author){
+//        //first have to merge before deleting and then delete
+//        getEm().remove(getEm().merge(author));
+//    }
 
     public Author findAuthor(String pkValue) throws ClassNotFoundException, SQLException {
         if (pkValue == null || pkValue.isEmpty()) {
             throw new IllegalArgumentException("Column value must be provided.");
         }
-//        return authorDao.getAuthorById(pkValue);
-        return null;
+        Integer pkVal = Integer.parseInt(pkValue);
+        String jpql = "Select a from Author a where a.authorId = :id";
+        TypedQuery<Author> q = getEm().createQuery(jpql,Author.class);
+        q.setParameter("id",pkVal);
+        return q.getSingleResult();
     }
 
     public List<Author> getAuthorList() throws Exception{
         String jpql = "Select a from Author a";
         TypedQuery<Author> q = getEm().createQuery(jpql,Author.class);
-        q.setMaxResults(500);       
+        q.setMaxResults(500);  //optional     
         return q.getResultList();
     }
 
