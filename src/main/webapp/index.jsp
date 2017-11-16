@@ -17,6 +17,7 @@
         <ul>
             <li><a href="authorController?action=list">View all Authors</a></li>
             <li><a href="authorController?action=add">Add Author(s)</a></li>
+            
            <!--
             <li><a href="authorController?action=edit">Edit Author</a></li>
             <li><a href="authorController?action=remove">Remove Author(s)</a></li>

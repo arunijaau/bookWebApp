@@ -6,8 +6,9 @@
 package edu.wctc.distjava.jaau.bookwebapp.controller;
 
 import edu.wctc.distjava.jaau.bookwebapp.model.Author;
-
 import edu.wctc.distjava.jaau.bookwebapp.model.AuthorService;
+
+
 
 
 
@@ -79,7 +80,8 @@ public class AuthorController extends HttpServlet {
 
             } else if (action.equalsIgnoreCase(EDIT_ACTION)) {
                 String authorId = request.getParameter(ID);
-                Author author = authorService.findAuthor(authorId);
+                //changed
+                Author author = authorService.findById(authorId);
                 if (method.equals(GET_METHOD)) {
                     request.setAttribute("author", author);
                     request.setAttribute("action", EDIT_ACTION);
@@ -91,7 +93,8 @@ public class AuthorController extends HttpServlet {
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                     Date date = format.parse(dateAdded);
                     author.setDateAdded(date);
-                    authorService.updateAuthor(author);
+                    //changed
+                    authorService.edit(author);
                     destination = LIST_PAGE;
                 }
 
@@ -108,12 +111,14 @@ public class AuthorController extends HttpServlet {
                     Author author = new Author();
                     author.setAuthorName(name);
                     author.setDateAdded(date);
-                    authorService.addAuthor(author);
+                    //changed
+                    authorService.create(author);
                 }
 
             }
             if (destination.equals(LIST_PAGE)) {
-                authorList = authorService.getAuthorList();
+                //changed
+                authorList = authorService.findAll();
                 request.setAttribute("authorList", authorList);
             }
 
