@@ -22,6 +22,15 @@
         <h1>Book List</h1>
 
         <table border="1">
+            <thead>
+                <tr>
+                    <th>Book Id</th>
+                    <th>Book Title</th>
+                    <th>ISBN</th>
+                    <th>Author Name</th>
+                    <th></th>
+                </tr>
+            </thead>
             
             <c:forEach var="b" items="${bookList}">
                 <tr>

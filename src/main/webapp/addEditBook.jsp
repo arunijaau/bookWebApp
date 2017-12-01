@@ -20,22 +20,26 @@
         <h1>Add/Edit Book</h1>
         
         <form name="addEditBookForm" id="addEditBookForm" method="POST" action="bookController?action=${action}">
+            <div>Book Title: <input type="text" value="${book.title}" name="title"></div>
             <input type="hidden" value="${book.bookId}" name="id">
-            Book Title: <input type="text" value="${book.title}" name="title">
-            <br>
+            <div>
             ISBN: <input type="text" value="${book.isbn}" name="isbn">
-            <br>
+            </div>
+            <div>
             Author: <select name="author">
                         <c:forEach var="a" items="${authors}">
                             <c:if test="${book.authorId.authorId == a.authorId}">
                                 <option value="${a.authorId}" selected="selected">${a.authorName}</option>
                             </c:if>
-                            
-                               <option value="${a.authorId}">${a.authorName}</option>
-                            
+                             <c:if test="${book.authorId.authorId != a.authorId}">
+                                <option value="${a.authorId}">${a.authorName}</option>
+                            </c:if>
                         </c:forEach>
                     </select>
+            </div>
+            <div>
             <input type="submit" name= "submit" value="Add/Edit"> 
+            </div>
         </form>
         
     </body>

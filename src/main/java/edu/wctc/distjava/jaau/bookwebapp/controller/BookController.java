@@ -41,14 +41,12 @@ public class BookController extends HttpServlet {
     public static final String ERR_MSG = "errMessage";
     public static final String BOOK_TITLE = "title";
     public static final String ISBN = "isbn";
-    public static final String AUTHOR_NAME = "authorName";
+    public static final String AUTHOR_ID = "author";
     public static final String AUTHORS = "authors";
     @EJB
     private BookService bookService;
     @EJB
     private AuthorService authorService;
-    
-    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -62,10 +60,10 @@ public class BookController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       // processRequest(request, response);
-       response.setContentType("text/html;charset=UTF-8");
-       
-       String destination;
+        // processRequest(request, response);
+        response.setContentType("text/html;charset=UTF-8");
+
+        String destination;
 
         try {
             String action = request.getParameter(ACTION);
@@ -91,7 +89,7 @@ public class BookController extends HttpServlet {
 
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
-       
+
     }
 
     /**
@@ -120,14 +118,14 @@ public class BookController extends HttpServlet {
                 case ADD_ACTION:
                     destination = doPostAdd(request);
                     break;
-//                case EDIT_ACTION:
-//                    //destination = doPostEdit(request);
-//                    break;
+                case EDIT_ACTION:
+                    destination = doPostEdit(request);
+                    break;
                 default:
                     destination = doGetList(request);
                     break;
             }
-            
+
         } catch (Exception e) {
             destination = LIST_PAGE;
             request.setAttribute(ERR_MSG, e.getMessage());
@@ -135,10 +133,8 @@ public class BookController extends HttpServlet {
 
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
-        
+
     }
-    
-    
 
     /**
      * Returns a short description of the servlet.
@@ -151,16 +147,17 @@ public class BookController extends HttpServlet {
     }// </editor-fold>
 
     private String doGetAdd(HttpServletRequest request) {
-       request.setAttribute(ACTION, ADD_ACTION);
-       List<Author> authors = authorService.findAll();
-       
-       return ADDEDIT_PAGE;
+        request.setAttribute(ACTION, ADD_ACTION);
+        List<Author> authors = authorService.findAll();
+        request.setAttribute(AUTHORS, authors);
+        return ADDEDIT_PAGE;
     }
 
     private String doGetEdit(HttpServletRequest request) {
         String bookId = request.getParameter(ID);
         Book book = bookService.findById(Integer.parseInt(bookId));
         List<Author> authors = authorService.findAll();
+        book.getAuthorId();
         request.setAttribute(ACTION, EDIT_ACTION);
         request.setAttribute(BOOK, book);
         request.setAttribute(AUTHORS, authors);
@@ -175,19 +172,19 @@ public class BookController extends HttpServlet {
 
     private String doPostDelete(HttpServletRequest request) throws ClassNotFoundException, IllegalArgumentException, SQLException {
         String bookId = request.getParameter(ID);
-        bookService.remove(bookService.findById(new Integer(bookId)));                     
+        bookService.remove(bookService.findById(new Integer(bookId)));
         return doGetList(request);
     }
 
     private String doPostAdd(HttpServletRequest request) {
         String title = request.getParameter(BOOK_TITLE);
         String isbn = request.getParameter(ISBN);
-        //String authorName = request.getParameter(AUTHOR_NAME);
-        
+        String authorId = request.getParameter(AUTHOR_ID);
+        Author newAuthor = authorService.findById(Integer.parseInt(authorId));
         Book book = new Book();
         book.setTitle(title);
         book.setIsbn(isbn);
-        //book.setAuthorId(authorId);
+        book.setAuthorId(newAuthor);
         bookService.create(book);
         return doGetList(request);
     }
@@ -197,11 +194,11 @@ public class BookController extends HttpServlet {
         Book book = bookService.findById(Integer.parseInt(bookId));
         String title = request.getParameter(BOOK_TITLE);
         String isbn = request.getParameter(ISBN);
-        //String authorName = request.getParameter(AUTHOR_NAME);
-        
+        String authorId = request.getParameter(AUTHOR_ID);
+        Author newAuthor = authorService.findById(Integer.parseInt(authorId));
         book.setTitle(title);
         book.setIsbn(isbn);
-       // book.setAuthorId(authorId);       
+        book.setAuthorId(newAuthor);
         bookService.edit(book);
         return doGetList(request);
     }
