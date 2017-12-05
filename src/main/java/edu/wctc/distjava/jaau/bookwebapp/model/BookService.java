@@ -5,57 +5,67 @@
  */
 package edu.wctc.distjava.jaau.bookwebapp.model;
 
+import edu.wctc.distjava.jaau.bookwebapp.repository.AuthorRepository;
+import edu.wctc.distjava.jaau.bookwebapp.repository.BookRepository;
 import java.sql.SQLException;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Aruni
  */
-@Stateless
-public class BookService extends AbstractFacade<Book> {
-
-    @PersistenceContext(unitName = "book_PU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEm() {
-        return em;
-    }
-
+@Service
+public class BookService {
+    
+    @Autowired
+    private BookRepository bookRepo;
+    @Autowired
+    private AuthorRepository authorRepo;
+    
     public BookService() {
-        super(Book.class);
+        
     }
     
-    public void removeBookById(int id) throws ClassNotFoundException, IllegalArgumentException,
-            SQLException, NumberFormatException {
-        
-        //Integer value = Integer.parseInt(id);
-        String jpql = "delete b from Book b where b.bookId = :id";
-        Query q = getEm().createQuery(jpql);
-        q.setParameter("id", id);
-        q.executeUpdate();  
+    public List<Book> findAll(){
+        return bookRepo.findAll();
+    }
     
-//    public void addOrUpdateBook(String bookId, String title, String isbn, String authorId){
-//         Book book = null;
-//        
-//        if(bookId == null || bookId.isEmpty()){
-//            //must be new record
-//            book = new Book();
-//                
-//        }else{
-//            //must be updated record
-//             book = new Book(new Integer(bookId));
-//        }
-//            book.setTitle(title);
-//            book.setIsbn(isbn);
-//            Author author = getEm().find(Author.class,new Integer(authorId));
-//            book.setAuthorId(author);
-//            
-//            getEm().merge(book); 
-//       
+    public Book findById(int id){
+        return bookRepo.findOne(id);
+    }
+    
+    public void updateBook(Book book){
+        bookRepo.save(book);
+    }
+    
+    public void addNewBook(String title, String isbn, String authorId){
+    //Author should be there for a book to create(Relational Integrity)        
+        Author author = authorRepo.findOne(Integer.parseInt(authorId));
+        Book book = new Book();
+        book.setTitle(title);
+        book.setIsbn(isbn);
+        book.setAuthorId(author);
+        bookRepo.save(book);
+    }
+    
+    public void addNewBook(Book book){
+        bookRepo.save(book);
+    }
+    
+    public void removeBookById(int id) {        
+        bookRepo.delete(id);
+        //Integer value = Integer.parseInt(id);
+        
+//        String jpql = "delete b from Book b where b.bookId = :id";
+//        Query q = getEm().createQuery(jpql);
+//        q.setParameter("id", id);
+//        q.executeUpdate();  
+       
     }
 }

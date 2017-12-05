@@ -8,12 +8,14 @@ package edu.wctc.distjava.jaau.bookwebapp.model;
 import edu.wctc.distjava.jaau.bookwebapp.repository.AuthorRepository;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,8 +37,22 @@ public class AuthorService {
         return authorRepo.findAll();
     }
     
-    public Author findById(String id){
+    public Author findById(String id) throws DataAccessException {
         return authorRepo.findOne(Integer.parseInt(id));
+    }
+    
+    public Author findById(int id){
+        return authorRepo.findOne(id);
+    }
+    
+    public void updateAuthor(String id, String authorName){
+        Author author = findById(id);
+        author.setAuthorName(authorName);
+        authorRepo.save(author);
+    }
+    
+    public void updateAuthor(Author author){
+        authorRepo.save(author);
     }
     
     public void addAuthor(String authorName){
@@ -44,27 +60,30 @@ public class AuthorService {
         Author author = new Author();
         author.setAuthorName(authorName);
         author.setDateAdded(dateAdded);
+        author.setBookSet(new HashSet());
         
         authorRepo.save(author);
     }
     
+    public void addAuthor(Author author){
+        authorRepo.save(author);
+    }
     
     public void removeAuthorById(String id) throws ClassNotFoundException, IllegalArgumentException,
             SQLException, NumberFormatException {
-        //No need to check for null because when we parse to an Integer it will be checked.
-        if (id == null) {
-            throw new IllegalArgumentException("id must be an Integer greater than 0.");
-        }        
         
-        Integer value = Integer.parseInt(id);
-        String jpql = "delete from Author a where a.authorId = :id";
-        Query q = getEm().createQuery(jpql);
-        q.setParameter("id", value);
-        q.executeUpdate();  
+        Integer value = Integer.parseInt(id);      
+        authorRepo.delete(value);
+  
+//        String jpql = "delete from Author a where a.authorId = :id";
+//        Query q = getEm().createQuery(jpql);
+//        q.setParameter("id", value);
+//        q.executeUpdate();  
         
         //Here author is retrieved from cache. Therefore no need to merge first. Less efficient.
 //        Author author = getEm().findById(Author.class,id);
 //        getEm().remove(author);
         }
+    
     
 }

@@ -10,9 +10,6 @@ import edu.wctc.distjava.jaau.bookwebapp.model.AuthorService;
 
 
 
-
-
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -24,11 +21,14 @@ import java.util.List;
 import java.util.Locale;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -50,7 +50,7 @@ public class AuthorController extends HttpServlet {
     public static final String GET_METHOD = "get";
     public static final String POST_METHOD = "post";
 
-    @EJB
+    
     private AuthorService authorService;
 
 
@@ -94,7 +94,7 @@ public class AuthorController extends HttpServlet {
                     Date date = format.parse(dateAdded);
                     author.setDateAdded(date);
                     //changed
-                    authorService.edit(author);
+                    authorService.updateAuthor(author);
                     destination = LIST_PAGE;
                 }
 
@@ -112,7 +112,7 @@ public class AuthorController extends HttpServlet {
                     author.setAuthorName(name);
                     author.setDateAdded(date);
                     //changed
-                    authorService.create(author);
+                    authorService.addAuthor(author);
                 }
 
             }
@@ -133,7 +133,12 @@ public class AuthorController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        //Ask Spring for object to inject
+        ServletContext sctx = getServletContext();
         
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        authorService = (AuthorService) ctx.getBean("authorService");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

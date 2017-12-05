@@ -15,11 +15,14 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -43,9 +46,9 @@ public class BookController extends HttpServlet {
     public static final String ISBN = "isbn";
     public static final String AUTHOR_ID = "author";
     public static final String AUTHORS = "authors";
-    @EJB
+    
     private BookService bookService;
-    @EJB
+    
     private AuthorService authorService;
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -172,7 +175,7 @@ public class BookController extends HttpServlet {
 
     private String doPostDelete(HttpServletRequest request) throws ClassNotFoundException, IllegalArgumentException, SQLException {
         String bookId = request.getParameter(ID);
-        bookService.remove(bookService.findById(new Integer(bookId)));
+        bookService.removeBookById(new Integer(bookId));
         return doGetList(request);
     }
 
@@ -185,7 +188,7 @@ public class BookController extends HttpServlet {
         book.setTitle(title);
         book.setIsbn(isbn);
         book.setAuthorId(newAuthor);
-        bookService.create(book);
+        bookService.addNewBook(book);
         return doGetList(request);
     }
 
@@ -199,8 +202,20 @@ public class BookController extends HttpServlet {
         book.setTitle(title);
         book.setIsbn(isbn);
         book.setAuthorId(newAuthor);
-        bookService.edit(book);
+        bookService.updateBook(book);
         return doGetList(request);
     }
 
+    @Override
+    public void init() throws ServletException {
+        //Ask Spring for object to inject
+        ServletContext sctx = getServletContext();
+        
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        bookService = (BookService) ctx.getBean("bookService");
+        authorService = (AuthorService) ctx.getBean("authorService");
+    }
+    
+    
 }

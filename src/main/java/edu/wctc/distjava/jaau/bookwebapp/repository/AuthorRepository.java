@@ -3,6 +3,7 @@ package edu.wctc.distjava.jaau.bookwebapp.repository;
 
 import edu.wctc.distjava.jaau.bookwebapp.model.Author;
 import java.io.Serializable;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Integer>, Serializable {
     
+//    @Query("SELECT a FROM Author where a.authorName = :authorName")
+//    public abstract List<Author> findByName(@Param ("authorName") String authorName);
+    
+//    public abstract List<Author> findByAuthorName(@Param ("authorName") String authorName);
+    
 	// example of a projection query
-    @Query("SELECT a.authorName FROM Author a")
-    public Object[] findAllWithNameOnly();
+//    @Query("SELECT a.authorName FROM Author a")
+//    public Object[] findAllWithNameOnly();
 }
