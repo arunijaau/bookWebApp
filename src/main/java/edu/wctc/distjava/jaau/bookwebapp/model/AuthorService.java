@@ -75,14 +75,7 @@ public class AuthorService {
         Integer value = Integer.parseInt(id);      
         authorRepo.delete(value);
   
-//        String jpql = "delete from Author a where a.authorId = :id";
-//        Query q = getEm().createQuery(jpql);
-//        q.setParameter("id", value);
-//        q.executeUpdate();  
-        
-        //Here author is retrieved from cache. Therefore no need to merge first. Less efficient.
-//        Author author = getEm().findById(Author.class,id);
-//        getEm().remove(author);
+
         }
     
     

@@ -62,10 +62,6 @@ public class BookService {
         bookRepo.delete(id);
         //Integer value = Integer.parseInt(id);
         
-//        String jpql = "delete b from Book b where b.bookId = :id";
-//        Query q = getEm().createQuery(jpql);
-//        q.setParameter("id", id);
-//        q.executeUpdate();  
-       
+
     }
 }
